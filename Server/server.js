@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "client", "dist")))
+app.use(express.static(path.join(__dirname, "../Client", "dist")))
 
 // Routes
 const healthRouter = require('./Routes/healthRouter');
@@ -31,7 +31,7 @@ mongoose
   .then(() => {
     console.log('Connected to MongoDB');
 
-    app.get("*", (req, res) => res.sendFile(path.join(__dirname, "client", "dist", "index.html")))
+    app.get("*", (req, res) => res.sendFile(path.join(__dirname, "../Client", "dist", "index.html")))
     
     app.listen(process.env.PORT, () => {
       console.log(`Server running on port ${process.env.PORT}`);
