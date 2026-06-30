@@ -31,7 +31,7 @@ mongoose
   .then(() => {
     console.log('Connected to MongoDB');
 
-    app.get("*", (req, res) => res.sendFile(path.join(__dirname, "../Client", "dist", "index.html")))
+    app.get("/*splat", (req, res) => res.sendFile(path.join(__dirname, "../Client", "dist", "index.html")))
     
     app.listen(process.env.PORT, () => {
       console.log(`Server running on port ${process.env.PORT}`);
