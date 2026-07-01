@@ -311,6 +311,7 @@ function BattleDashboard() {
           </div>
           <div className="dashboard-panel-content dashboard-panel-content--flush">
             <BattleHexGrid
+              key={uid}
               enemies={enemies}
               spriteCount={spriteCount}
               sleepSpriteCount={sleepSpriteCount}
