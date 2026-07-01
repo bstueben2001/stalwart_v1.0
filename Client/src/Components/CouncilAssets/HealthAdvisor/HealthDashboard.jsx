@@ -400,24 +400,15 @@ function HealthDashboard() {
 
     const moodLabel = MOOD_OPTIONS.find(o => o.value === moodEntry?.value)?.label;
 
-    const lines = [
-      moodEntry ? `Mood: ${moodEntry.value}/5 (${moodLabel})` : 'Mood: Not logged',
-      waterTotal > 0
-        ? `Water: ${waterTotal} / ${nutritionTargets.water} oz${waterTotal >= nutritionTargets.water ? ' ✓' : ''}`
-        : 'Water: Not logged',
-      calorieTotal > 0
-        ? `Calories: ${calorieTotal} / ${nutritionTargets.calories} cal${calorieTotal >= nutritionTargets.calories ? ' ✓' : ''}`
-        : 'Calories: Not logged',
-    ];
-
-    if (diaryEntries.length > 0) {
-      lines.push('');
-      lines.push('Diary:');
-      diaryEntries.forEach(e => lines.push(`• ${e.title}`));
-    }
+    const reportData = {
+      mood:     moodEntry ? { value: moodEntry.value, label: moodLabel } : null,
+      water:    { total: waterTotal,    goal: nutritionTargets.water    },
+      calories: { total: calorieTotal, goal: nutritionTargets.calories },
+      diary:    diaryEntries.map(e => e.title),
+    };
 
     const existing = healthGoals.find(e => e.subcategory === 'daily-report' && e.date === activeDate);
-    const payload  = { title: 'Daily Health Report', description: lines.join('\n'), date: activeDate, category: 'health', subcategory: 'daily-report' };
+    const payload  = { title: 'Daily Health Report', description: JSON.stringify(reportData), date: activeDate, category: 'health', subcategory: 'daily-report' };
 
     if (existing) {
       editCalendarEvent(existing.id, { title: payload.title, description: payload.description });

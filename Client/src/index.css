@@ -2460,12 +2460,20 @@ nav a.active {
 }
 .cal-layout--with-sidebar { grid-template-columns: 1fr 220px; }
 
-.cal-main { overflow: auto; }
+.cal-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto repeat(6, 1fr);
   gap: 2px;
+  flex: 1;
+  min-height: 0;
 }
 
 .cal-day-header {
@@ -2480,7 +2488,8 @@ nav a.active {
 }
 
 .cal-cell {
-  aspect-ratio: 1;
+  min-height: 0;
+  overflow: hidden;
   padding: 0.35rem 0.4rem;
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -2504,7 +2513,7 @@ nav a.active {
 }
 .cal-cell--today .cal-day-number { color: var(--gold); }
 
-.cal-events { display: flex; flex-direction: column; gap: 2px; }
+.cal-events { display: flex; flex-direction: column; gap: 2px; overflow: hidden; flex: 1; min-height: 0; }
 
 .cal-event {
   background: var(--event-color);
@@ -2676,6 +2685,68 @@ nav a.active {
   gap: 0.5rem;
 }
 .cal-modal-actions-right { display: flex; gap: 0.5rem; }
+
+.cal-report-view {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cal-report-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+}
+
+.cal-report-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.cal-report-stat-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.cal-report-stat-value {
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.cal-report-diary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cal-report-diary-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.cal-report-diary-entry {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-style: italic;
+  margin: 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--border-bright);
+}
 
 .cal-btn {
   border: 1px solid transparent;

@@ -258,14 +258,55 @@ function Calendar() {
               />
             </label>
 
-            <label>Description
-              <textarea
-                value={form.description}
-                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                placeholder="Optional description"
-                rows={3}
-              />
-            </label>
+            {modal.event?.subcategory === 'daily-report' ? (() => {
+              let r = {};
+              try { r = JSON.parse(modal.event.description); } catch {}
+              return (
+                <div className="cal-report-view">
+                  <div className="cal-report-stats">
+                    <div className="cal-report-stat">
+                      <span className="cal-report-stat-label">Mood</span>
+                      <span className="cal-report-stat-value">
+                        {r.mood ? `${r.mood.value}/5 — ${r.mood.label}` : 'Not logged'}
+                      </span>
+                    </div>
+                    <div className="cal-report-stat">
+                      <span className="cal-report-stat-label">Water</span>
+                      <span className="cal-report-stat-value">
+                        {r.water?.total > 0
+                          ? `${r.water.total} / ${r.water.goal} oz${r.water.total >= r.water.goal ? ' ✓' : ''}`
+                          : 'Not logged'}
+                      </span>
+                    </div>
+                    <div className="cal-report-stat">
+                      <span className="cal-report-stat-label">Calories</span>
+                      <span className="cal-report-stat-value">
+                        {r.calories?.total > 0
+                          ? `${r.calories.total} / ${r.calories.goal} cal${r.calories.total >= r.calories.goal ? ' ✓' : ''}`
+                          : 'Not logged'}
+                      </span>
+                    </div>
+                  </div>
+                  {r.diary?.length > 0 && (
+                    <div className="cal-report-diary">
+                      <span className="cal-report-diary-label">Daily Log</span>
+                      {r.diary.map((entry, i) => (
+                        <p key={i} className="cal-report-diary-entry">{entry}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })() : (
+              <label>Description
+                <textarea
+                  value={form.description}
+                  onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                  placeholder="Optional description"
+                  rows={3}
+                />
+              </label>
+            )}
 
             <label>Category
               <div className="cal-category-picker">
