@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const nodemailer = require('nodemailer');
 
 router.post('/', async (req, res) => {
   const { message } = req.body;
@@ -8,23 +7,18 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Message is required' });
   }
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASS.replace(/\s/g, ''),
-    },
-  });
-
   try {
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: 'breaddev.survey@gmail.com',
-      subject: 'Stalwart App — User Feedback',
-      text: message.trim(),
+    const response = await fetch(`https://formspree.io/f/${process.env.FORMSPREE_ID}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: message.trim() }),
     });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Formspree rejected the request');
+    }
+
     res.json({ success: true });
   } catch (err) {
     console.error('Feedback email error:', err);
