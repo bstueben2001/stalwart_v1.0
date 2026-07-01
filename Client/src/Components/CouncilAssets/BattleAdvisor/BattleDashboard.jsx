@@ -158,24 +158,26 @@ function BattleEnemyItem({ item, onEdit, onDelete, slaying = false, currentHp, m
 
 function BattleDashboard() {
   const navigate = useNavigate();
-  const { calendarEvents, addCalendarEvent, editCalendarEvent, deleteCalendarEvent, slayCalendarEvent } = useAppContext();
+  const { calendarEvents, addCalendarEvent, editCalendarEvent, deleteCalendarEvent, slayCalendarEvent, user } = useAppContext();
+  const uid = user?.id || 'guest';
+
   const [form, setForm]         = useState(EMPTY_FORM);
   const [error, setError]       = useState('');
   const [showDialog, setShowDialog]             = useState(false);
-  const [hasDeployed, setHasDeployed]           = useState(() => readLS('battle_hasDeployed', false));
-  const [savedHours, setSavedHours]             = useState(() => readLS('battle_savedHours', { sleep: 0, work: 0, school: 0, commute: 0 }));
-  const [spriteCount, setSpriteCount]           = useState(() => readLS('battle_spriteCount', 0));
-  const [sleepSpriteCount, setSleepSpriteCount] = useState(() => readLS('battle_sleepSpriteCount', 0));
-  const [deployId, setDeployId]                 = useState(() => readLS('battle_deployId', 0));
+  const [hasDeployed, setHasDeployed]           = useState(() => readLS(`battle_hasDeployed_${uid}`, false));
+  const [savedHours, setSavedHours]             = useState(() => readLS(`battle_savedHours_${uid}`, { sleep: 0, work: 0, school: 0, commute: 0 }));
+  const [spriteCount, setSpriteCount]           = useState(() => readLS(`battle_spriteCount_${uid}`, 0));
+  const [sleepSpriteCount, setSleepSpriteCount] = useState(() => readLS(`battle_sleepSpriteCount_${uid}`, 0));
+  const [deployId, setDeployId]                 = useState(() => readLS(`battle_deployId_${uid}`, 0));
   const [slayingIds, setSlayingIds]             = useState(new Set());
   const [enemyHpSnapshot, setEnemyHpSnapshot]   = useState({});
   const [highlightedEnemyId, setHighlightedEnemyId] = useState(null);
 
-  useEffect(() => { localStorage.setItem('battle_hasDeployed',    JSON.stringify(hasDeployed));    }, [hasDeployed]);
-  useEffect(() => { localStorage.setItem('battle_savedHours',     JSON.stringify(savedHours));     }, [savedHours]);
-  useEffect(() => { localStorage.setItem('battle_spriteCount',    JSON.stringify(spriteCount));    }, [spriteCount]);
-  useEffect(() => { localStorage.setItem('battle_sleepSpriteCount', JSON.stringify(sleepSpriteCount)); }, [sleepSpriteCount]);
-  useEffect(() => { localStorage.setItem('battle_deployId',       JSON.stringify(deployId));       }, [deployId]);
+  useEffect(() => { localStorage.setItem(`battle_hasDeployed_${uid}`,      JSON.stringify(hasDeployed));      }, [hasDeployed, uid]);
+  useEffect(() => { localStorage.setItem(`battle_savedHours_${uid}`,       JSON.stringify(savedHours));       }, [savedHours, uid]);
+  useEffect(() => { localStorage.setItem(`battle_spriteCount_${uid}`,      JSON.stringify(spriteCount));      }, [spriteCount, uid]);
+  useEffect(() => { localStorage.setItem(`battle_sleepSpriteCount_${uid}`, JSON.stringify(sleepSpriteCount)); }, [sleepSpriteCount, uid]);
+  useEffect(() => { localStorage.setItem(`battle_deployId_${uid}`,         JSON.stringify(deployId));         }, [deployId, uid]);
 
   function handleDeploy({ sprites, sleepSprites, hours }) {
     setSpriteCount(sprites);
