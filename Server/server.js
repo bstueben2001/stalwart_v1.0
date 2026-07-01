@@ -19,11 +19,13 @@ const healthRouter = require('./Routes/healthRouter');
 const diplomacyRouter = require('./Routes/diplomacyRouter');
 const battleRouter = require('./Routes/battleRouter');
 const authRouter = require('./Routes/authRouter');
+const feedbackRouter = require('./Routes/feedbackRouter');
 
 app.use('/api/health', healthRouter);
 app.use('/api/diplomacy', diplomacyRouter);
 app.use('/api/battle', battleRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/feedback', feedbackRouter);
 
 // MongoDB connection
 mongoose

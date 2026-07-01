@@ -1568,6 +1568,42 @@ nav a.active {
 }
 .settings-toggle--on .settings-toggle-knob { transform: translateX(20px); }
 
+.settings-row--feedback { align-items: flex-start; }
+
+.settings-feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.settings-feedback-textarea {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: 'Lora', serif;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.7rem;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+}
+.settings-feedback-textarea:focus { outline: none; border-color: var(--gold-dim); }
+.settings-feedback-textarea:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.settings-feedback-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settings-feedback-msg {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+.settings-feedback-msg--success { color: var(--gold-dim); }
+.settings-feedback-msg--error { color: #c0392b; }
+
 /* ── Council ── */
 .council-page {
   padding: 2rem;
