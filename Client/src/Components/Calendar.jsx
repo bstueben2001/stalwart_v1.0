@@ -287,14 +287,16 @@ function Calendar() {
                       </span>
                     </div>
                   </div>
-                  {r.diary?.length > 0 && (
-                    <div className="cal-report-diary">
-                      <span className="cal-report-diary-label">Daily Log</span>
-                      {r.diary.map((entry, i) => (
+                  <div className="cal-report-diary">
+                    <span className="cal-report-diary-label">Daily Log</span>
+                    {r.diary?.length > 0 ? (
+                      r.diary.map((entry, i) => (
                         <p key={i} className="cal-report-diary-entry">{entry}</p>
-                      ))}
-                    </div>
-                  )}
+                      ))
+                    ) : (
+                      <p className="cal-report-diary-entry cal-report-diary-empty">None logged for this day</p>
+                    )}
+                  </div>
                 </div>
               );
             })() : (

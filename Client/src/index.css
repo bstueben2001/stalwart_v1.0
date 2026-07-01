@@ -2748,6 +2748,13 @@ nav a.active {
   border-left: 2px solid var(--border-bright);
 }
 
+.cal-report-diary-empty {
+  color: var(--text-muted);
+  border-left-color: transparent;
+  padding-left: 0;
+  font-style: normal;
+}
+
 .cal-btn {
   border: 1px solid transparent;
   border-radius: 4px;

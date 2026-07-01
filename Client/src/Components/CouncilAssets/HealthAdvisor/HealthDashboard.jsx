@@ -364,7 +364,7 @@ function HealthDashboard() {
 
   const healthGoals = calendarEvents.filter(e => e.category === 'health');
   const logEntries  = calendarEvents
-    .filter(e => e.category === 'health' && e.subcategory === 'log')
+    .filter(e => e.category === 'health' && e.subcategory === 'log' && e.date === activeDate)
     .sort((a, b) => b.date.localeCompare(a.date));
 
   function goalsBySubcat(id) {
