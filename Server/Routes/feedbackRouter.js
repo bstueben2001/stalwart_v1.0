@@ -9,10 +9,12 @@ router.post('/', async (req, res) => {
   }
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASS,
+      pass: process.env.GMAIL_APP_PASS.replace(/\s/g, ''),
     },
   });
 
