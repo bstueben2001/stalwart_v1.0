@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { useAppContext } from '../../../Context';
 
 function readLS(key, fallback) {
   try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; }
@@ -106,9 +107,12 @@ function makeInitialSpriteMap() {
 }
 
 export default function BattleHexGrid({ enemies = [], spriteCount = 0, sleepSpriteCount = 0, deployId = 0, onSlay, onHpChange, highlightedEnemyId = null }) {
-  const [spriteMap,     setSpriteMap]     = useState(() => readLS('battle_spriteMap', makeInitialSpriteMap()));
+  const { user } = useAppContext();
+  const uid = user?.id || 'guest';
+
+  const [spriteMap,     setSpriteMap]     = useState(() => readLS(`battle_spriteMap_${uid}`, makeInitialSpriteMap()));
   const [selected,      setSelected]      = useState(() => new Set());
-  const [enemyHp,       setEnemyHp]       = useState(() => readLS('battle_enemyHp', {}));
+  const [enemyHp,       setEnemyHp]       = useState(() => readLS(`battle_enemyHp_${uid}`, {}));
   const [pendingAttack, setPendingAttack] = useState(null); // { enemy, keys: string[] }
   const [tooltip,       setTooltip]       = useState(null); // { enemy, x, y }
   const [hoveredHex,    setHoveredHex]    = useState(null);
@@ -133,8 +137,8 @@ export default function BattleHexGrid({ enemies = [], spriteCount = 0, sleepSpri
   }, [deployId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Persist combat state
-  useEffect(() => { localStorage.setItem('battle_spriteMap', JSON.stringify(spriteMap)); }, [spriteMap]);
-  useEffect(() => { localStorage.setItem('battle_enemyHp',   JSON.stringify(enemyHp));   }, [enemyHp]);
+  useEffect(() => { localStorage.setItem(`battle_spriteMap_${uid}`, JSON.stringify(spriteMap)); }, [spriteMap, uid]);
+  useEffect(() => { localStorage.setItem(`battle_enemyHp_${uid}`,   JSON.stringify(enemyHp));   }, [enemyHp, uid]);
 
   // Sync HP snapshot to parent for the list to display
   useEffect(() => {
