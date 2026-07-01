@@ -360,6 +360,7 @@ function HealthDashboard() {
   const [graphSubcat, setGraphSubcat]       = useState('fitness');
   const [timeRange, setTimeRange]           = useState('7days');
   const [nutritionTargets, setNutritionTargets] = useState({ water: 64, calories: 2000 });
+  const [reportStatus, setReportStatus]     = useState(null);
 
   const healthGoals = calendarEvents.filter(e => e.category === 'health');
   const logEntries  = calendarEvents
@@ -380,6 +381,52 @@ function HealthDashboard() {
     addCalendarEvent({ title: logNote.trim(), date: activeDate, description: '', category: 'health', subcategory: 'log' });
     setLogNote('');
     setLogError('');
+  }
+
+  function handlePushReport() {
+    const moodEntry = healthGoals
+      .filter(e => e.subcategory === 'mental-mood' && e.date === activeDate)
+      .sort((a, b) => b.id.localeCompare(a.id))[0];
+
+    const waterTotal = healthGoals
+      .filter(e => e.subcategory === 'nutrition-water' && e.date === activeDate)
+      .reduce((sum, e) => sum + (Number(e.value) || 0), 0);
+
+    const calorieTotal = healthGoals
+      .filter(e => e.subcategory === 'nutrition-calories' && e.date === activeDate)
+      .reduce((sum, e) => sum + (Number(e.value) || 0), 0);
+
+    const diaryEntries = healthGoals.filter(e => e.subcategory === 'log' && e.date === activeDate);
+
+    const moodLabel = MOOD_OPTIONS.find(o => o.value === moodEntry?.value)?.label;
+
+    const lines = [
+      moodEntry ? `Mood: ${moodEntry.value}/5 (${moodLabel})` : 'Mood: Not logged',
+      waterTotal > 0
+        ? `Water: ${waterTotal} / ${nutritionTargets.water} oz${waterTotal >= nutritionTargets.water ? ' ✓' : ''}`
+        : 'Water: Not logged',
+      calorieTotal > 0
+        ? `Calories: ${calorieTotal} / ${nutritionTargets.calories} cal${calorieTotal >= nutritionTargets.calories ? ' ✓' : ''}`
+        : 'Calories: Not logged',
+    ];
+
+    if (diaryEntries.length > 0) {
+      lines.push('');
+      lines.push('Diary:');
+      diaryEntries.forEach(e => lines.push(`• ${e.title}`));
+    }
+
+    const existing = healthGoals.find(e => e.subcategory === 'daily-report' && e.date === activeDate);
+    const payload  = { title: 'Daily Health Report', description: lines.join('\n'), date: activeDate, category: 'health', subcategory: 'daily-report' };
+
+    if (existing) {
+      editCalendarEvent(existing.id, { title: payload.title, description: payload.description });
+    } else {
+      addCalendarEvent(payload);
+    }
+
+    setReportStatus('pushed');
+    setTimeout(() => setReportStatus(null), 2500);
   }
 
   const chartData   = buildChartData(healthGoals, graphSubcat, timeRange);
@@ -403,10 +450,10 @@ function HealthDashboard() {
           value={activeDate}
           onChange={e => setActiveDate(e.target.value)}
         />
-        <button
-          className="dashboard-back"
-          onClick={() => setActiveDate(todayKey())}
-        >Today</button>
+        <button className="dashboard-back" onClick={() => setActiveDate(todayKey())}>Today</button>
+        <button className="health-report-btn" onClick={handlePushReport}>
+          {reportStatus === 'pushed' ? 'Report Pushed ✓' : 'Push Daily Report'}
+        </button>
       </div>
 
       <div className="health-layout">

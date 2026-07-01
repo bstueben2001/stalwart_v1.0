@@ -109,7 +109,13 @@ function Calendar() {
     closeModal();
   }
 
-  const upcomingEvents = events
+  const HIDDEN_HEALTH_SUBCATS = new Set(['mental-mood', 'nutrition-water', 'nutrition-calories', 'log']);
+
+  const visibleEvents = events.filter(e =>
+    e.category !== 'health' || !HIDDEN_HEALTH_SUBCATS.has(e.subcategory)
+  );
+
+  const upcomingEvents = visibleEvents
     .filter(e => e.date >= todayKey)
     .filter(e => activeFilter === null || e.category === activeFilter)
     .sort((a, b) => a.date.localeCompare(b.date));
@@ -123,6 +129,7 @@ function Calendar() {
   const cells = [];
   for (let i = 0; i < firstDayOfMonth; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  while (cells.length < 42) cells.push(null);
 
   return (
     <div className="calendar-page">
@@ -165,7 +172,7 @@ function Calendar() {
               if (!day) return <div key={`empty-${i}`} className="cal-cell cal-cell--empty" />;
 
               const dateKey   = toDateKey(year, month, day);
-              const dayEvents = events
+              const dayEvents = visibleEvents
                 .filter(e => e.date === dateKey)
                 .filter(e => activeFilter === null || e.category === activeFilter);
               const isToday   = dateKey === todayKey;

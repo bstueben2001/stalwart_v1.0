@@ -568,6 +568,23 @@ nav a.active {
   padding: 0.5rem 0;
 }
 
+.health-report-btn {
+  margin-left: auto;
+  background: var(--bg-raised);
+  border: 1px solid #4caf82;
+  border-radius: 4px;
+  color: #4caf82;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.9rem;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.health-report-btn:hover { background: #4caf8222; }
+
 .health-date-label {
   font-family: 'Cinzel', serif;
   font-size: 0.75rem;

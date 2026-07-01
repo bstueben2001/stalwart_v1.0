@@ -8,7 +8,7 @@ const healthGoalSchema = new mongoose.Schema({
   category:    { type: String, default: 'health' },
   subcategory: {
     type:    String,
-    enum:    ['fitness', 'mental-mood', 'nutrition-water', 'nutrition-calories', 'log'],
+    enum:    ['fitness', 'mental-mood', 'nutrition-water', 'nutrition-calories', 'log', 'daily-report'],
     default: 'log',
   },
   value: { type: Number },
