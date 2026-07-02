@@ -16,7 +16,7 @@ import generalRoman from './generalRoman.png';
 import BattleHexGrid from './BattleHexGrid';
 import BattleDialog from './BattleDialog';
 import SpeechBubble from '../../SpeechBubble';
-import { getDayType, getFocus, resolveFocus, getDialogue } from './battleAdvisorUtils';
+import { getDayType, getFocus, resolveFocus, getDialogue, getAttackDialogue } from './battleAdvisorUtils';
 
 const DIFFICULTIES = ['Minion', 'Captain', 'Champion', 'Commander', 'General', 'Overlord', 'Prophet', 'Emperor', 'God'];
 
@@ -175,8 +175,21 @@ function BattleDashboard() {
   const [enemyHpSnapshot, setEnemyHpSnapshot]   = useState({});
   const [highlightedEnemyId, setHighlightedEnemyId] = useState(null);
   const [sortBy, setSortBy]                     = useState('date');
+  const [sortDir, setSortDir]                   = useState('asc');
   const [suggestion, setSuggestion]             = useState(null); // { text, targetIds: Set }
+  const [attackDialogue, setAttackDialogue]     = useState(null);
   const suggestionTimerRef                      = useRef(null);
+  const [advisorAnim, setAdvisorAnim]           = useState('idle'); // idle | exit | offscreen | enter
+
+  function toggleAdvisor() {
+    if (advisorAnim === 'idle')      setAdvisorAnim('exit');
+    else if (advisorAnim === 'offscreen') setAdvisorAnim('enter');
+  }
+
+  function handleAdvisorAnimEnd() {
+    if (advisorAnim === 'exit')  setAdvisorAnim('offscreen');
+    if (advisorAnim === 'enter') setAdvisorAnim('idle');
+  }
 
   useEffect(() => { localStorage.setItem(`battle_hasDeployed_${uid}`,      JSON.stringify(hasDeployed));      }, [hasDeployed, uid]);
   useEffect(() => { localStorage.setItem(`battle_savedHours_${uid}`,       JSON.stringify(savedHours));       }, [savedHours, uid]);
@@ -201,7 +214,7 @@ function BattleDashboard() {
         text:      getDialogue(dayType),
         targetIds: new Set(plan.targets.map(e => e.id)),
       });
-    }, 3000);
+    }, 1000);
   }
 
   function handleReset() {
@@ -224,10 +237,12 @@ function BattleDashboard() {
 
   const enemies = calendarEvents
     .filter(e => e.category === 'battle')
-    .sort((a, b) => sortBy === 'difficulty'
-      ? DIFFICULTIES.indexOf(b.difficulty ?? 'Minion') - DIFFICULTIES.indexOf(a.difficulty ?? 'Minion')
-      : a.date.localeCompare(b.date)
-    );
+    .sort((a, b) => {
+      const cmp = sortBy === 'difficulty'
+        ? DIFFICULTIES.indexOf(a.difficulty ?? 'Minion') - DIFFICULTIES.indexOf(b.difficulty ?? 'Minion')
+        : a.date.localeCompare(b.date);
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
 
   function handleAdd(e) {
     e.preventDefault();
@@ -240,10 +255,22 @@ function BattleDashboard() {
 
   return (
     <div className="dashboard-page" style={{ '--advisor-color': '#e05c5c' }}>
-      <img src={generalRoman} alt="" className="battle-general-img" />
+      <img
+        src={generalRoman}
+        alt=""
+        className={`battle-general-img${advisorAnim !== 'idle' ? ` battle-general-img--${advisorAnim}` : ''}`}
+        onAnimationEnd={handleAdvisorAnimEnd}
+      />
+      <button
+        className={`battle-advisor-toggle${advisorAnim === 'offscreen' ? ' battle-advisor-toggle--hidden' : ''}`}
+        onClick={toggleAdvisor}
+        title={advisorAnim === 'offscreen' ? 'Show Advisor' : 'Hide Advisor'}
+      >
+        {advisorAnim === 'offscreen' ? '◀' : '▶'}
+      </button>
       <SpeechBubble
-        text={suggestion?.text}
-        onDismiss={() => setSuggestion(null)}
+        text={attackDialogue ?? suggestion?.text}
+        onDismiss={() => attackDialogue ? setAttackDialogue(null) : setSuggestion(null)}
         className="speech-bubble--advisor"
       />
 
@@ -305,6 +332,13 @@ function BattleDashboard() {
               <option value="date">Due Date</option>
               <option value="difficulty">Enemy Difficulty</option>
             </select>
+            <button
+              className="battle-sort-dir-btn"
+              onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
+              title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              {sortDir === 'asc' ? '↑' : '↓'}
+            </button>
           </div>
           <div className="dashboard-panel-content">
             {enemies.length === 0 ? (
@@ -356,6 +390,7 @@ function BattleDashboard() {
               sleepSpriteCount={sleepSpriteCount}
               deployId={deployId}
               onSlay={handleSlay}
+              onAttack={() => setAttackDialogue(getAttackDialogue())}
               onHpChange={setEnemyHpSnapshot}
               highlightedEnemyId={highlightedEnemyId}
             />

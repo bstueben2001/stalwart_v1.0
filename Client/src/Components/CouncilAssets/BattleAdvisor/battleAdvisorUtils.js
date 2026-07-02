@@ -60,6 +60,23 @@ export function getDialogue(dayType) {
   return lines[Math.floor(Math.random() * lines.length)];
 }
 
+const ATTACK_DIALOGUE = [
+  "Get 'er done!",
+  "Very nice work",
+  "Show 'em what for!",
+  "You got this, pal!",
+  "Those enemies don't stand a chance!",
+  "Way to go, buddy!",
+  "Light 'em up, soldier!",
+  "KRAKATOA!",
+  "Righteous, dude!",
+  "Stellar work, my liege!",
+];
+
+export function getAttackDialogue() {
+  return ATTACK_DIALOGUE[Math.floor(Math.random() * ATTACK_DIALOGUE.length)];
+}
+
 // ── Enemy difficulty minutes (single source of truth) ──────────────────────
 export const ENEMY_MIN = {
   Minion:    10,

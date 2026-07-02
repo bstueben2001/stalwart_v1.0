@@ -106,7 +106,7 @@ function makeInitialSpriteMap() {
   return { [CHAMPION_KEY]: { type: 'champion', min: 120, maxMin: 120 } };
 }
 
-export default function BattleHexGrid({ enemies = [], spriteCount = 0, sleepSpriteCount = 0, deployId = 0, onSlay, onHpChange, highlightedEnemyId = null }) {
+export default function BattleHexGrid({ enemies = [], spriteCount = 0, sleepSpriteCount = 0, deployId = 0, onSlay, onAttack, onHpChange, highlightedEnemyId = null }) {
   const { user } = useAppContext();
   const uid = user?.id || 'guest';
 
@@ -216,6 +216,7 @@ export default function BattleHexGrid({ enemies = [], spriteCount = 0, sleepSpri
     } else {
       setEnemyHp(prev => ({ ...prev, [enemy.id]: currentHp - totalMin }));
     }
+    onAttack?.();
     setPendingAttack(null);
     setSelected(new Set());
   }
