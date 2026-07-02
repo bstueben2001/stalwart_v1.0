@@ -172,6 +172,7 @@ function BattleDashboard() {
   const [slayingIds, setSlayingIds]             = useState(new Set());
   const [enemyHpSnapshot, setEnemyHpSnapshot]   = useState({});
   const [highlightedEnemyId, setHighlightedEnemyId] = useState(null);
+  const [sortBy, setSortBy]                     = useState('date');
 
   useEffect(() => { localStorage.setItem(`battle_hasDeployed_${uid}`,      JSON.stringify(hasDeployed));      }, [hasDeployed, uid]);
   useEffect(() => { localStorage.setItem(`battle_savedHours_${uid}`,       JSON.stringify(savedHours));       }, [savedHours, uid]);
@@ -206,7 +207,10 @@ function BattleDashboard() {
 
   const enemies = calendarEvents
     .filter(e => e.category === 'battle')
-    .sort((a, b) => a.date.localeCompare(b.date));
+    .sort((a, b) => sortBy === 'difficulty'
+      ? DIFFICULTIES.indexOf(b.difficulty ?? 'Minion') - DIFFICULTIES.indexOf(a.difficulty ?? 'Minion')
+      : a.date.localeCompare(b.date)
+    );
 
   function handleAdd(e) {
     e.preventDefault();
@@ -268,6 +272,18 @@ function BattleDashboard() {
 
         <div className="dashboard-panel">
           <div className="dashboard-panel-heading">Enemies</div>
+          <div className="battle-sort-row">
+            <label className="battle-sort-label" htmlFor="battle-sort">Sort by</label>
+            <select
+              id="battle-sort"
+              className="dashboard-input battle-sort-select"
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+            >
+              <option value="date">Due Date</option>
+              <option value="difficulty">Enemy Difficulty</option>
+            </select>
+          </div>
           <div className="dashboard-panel-content">
             {enemies.length === 0 ? (
               <p className="dashboard-panel-placeholder">No enemies logged yet.</p>

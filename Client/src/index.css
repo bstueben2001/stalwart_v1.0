@@ -1729,6 +1729,30 @@ nav a.active {
 }
 .battle-panel-btn:hover { background: rgba(224, 92, 92, 0.12); }
 
+/* ── Battle: Sort Row ── */
+.battle-sort-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem 0.25rem;
+}
+
+.battle-sort-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #aaa;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.battle-sort-select {
+  flex: 0 1 auto;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+}
+
 /* ── Battle: Day Allocation Dialog ── */
 .battle-dialog-overlay {
   position: fixed;
