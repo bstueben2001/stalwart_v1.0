@@ -17,7 +17,7 @@ import BattleHexGrid from './BattleHexGrid';
 import BattleDialog from './BattleDialog';
 import SpeechBubble from '../../SpeechBubble';
 import RecurrenceFields from '../../RecurrenceFields';
-import { getDayType, getFocus, resolveFocus, getDialogue, getAttackDialogue } from './battleAdvisorUtils';
+import { getDayType, getFocus, resolveFocus, getDialogue, getAttackDialogue, getIdleDialogue } from './battleAdvisorUtils';
 import { generateDates } from '../../../utils/recurrence';
 
 const DIFFICULTIES = ['Minion', 'Captain', 'Champion', 'Commander', 'General', 'Overlord', 'Prophet', 'Emperor', 'God'];
@@ -266,8 +266,9 @@ function BattleDashboard() {
       <img
         src={generalRoman}
         alt=""
-        className={`battle-general-img${advisorAnim !== 'idle' ? ` battle-general-img--${advisorAnim}` : ''}`}
+        className={`battle-general-img${advisorAnim !== 'idle' ? ` battle-general-img--${advisorAnim}` : ' battle-general-img--clickable'}`}
         onAnimationEnd={handleAdvisorAnimEnd}
+        onClick={() => advisorAnim === 'idle' && setAttackDialogue(getIdleDialogue())}
       />
       <button
         className={`battle-advisor-toggle${advisorAnim === 'offscreen' ? ' battle-advisor-toggle--hidden' : ''}`}

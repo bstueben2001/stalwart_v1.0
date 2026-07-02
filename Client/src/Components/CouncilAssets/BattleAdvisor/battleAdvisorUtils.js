@@ -77,6 +77,23 @@ export function getAttackDialogue() {
   return ATTACK_DIALOGUE[Math.floor(Math.random() * ATTACK_DIALOGUE.length)];
 }
 
+const IDLE_DIALOGUE = [
+  "Greetings, champion.",
+  "If you ever feel overwhelmed, you don't have to use all your Sprites.",
+  "You are far more capable than you acknowledge, champion.",
+  "Hail, champion.",
+  "Don't forget to take time for yourself whenever you can.",
+  "You are doing better than others may not tell you.",
+  "Highest regards, champion.",
+  "Your Sprites can wait if you need them to. Breathe.",
+  "No one is perfect. Keep building yourself one day at a time.",
+  "Did you know that Gentoo penguins propose to their mates by presenting them with the \"perfect pebble.\"? I didn't.",
+];
+
+export function getIdleDialogue() {
+  return IDLE_DIALOGUE[Math.floor(Math.random() * IDLE_DIALOGUE.length)];
+}
+
 // ── Enemy difficulty minutes (single source of truth) ──────────────────────
 export const ENEMY_MIN = {
   Minion:    10,

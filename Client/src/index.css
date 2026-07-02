@@ -1130,6 +1130,11 @@ nav a.active {
   z-index: 2;
   filter: brightness(0.7);
 }
+.battle-general-img--clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.battle-general-img--clickable:hover { filter: brightness(0.85); }
 
 @keyframes advisor-exit {
   0%   { transform: translateX(0);      }
