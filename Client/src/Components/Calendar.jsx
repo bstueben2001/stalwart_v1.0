@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAppContext, CATEGORIES } from '../Context';
+import RecurrenceFields from './RecurrenceFields';
+import { generateDates } from '../utils/recurrence';
 
 const DAYS_OF_WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -22,18 +24,6 @@ function formatDisplayDate(dateKey) {
   });
 }
 
-function generateDates(startDate, recurrence, count) {
-  const [y, m, d] = startDate.split('-').map(Number);
-  return Array.from({ length: count }, (_, i) => {
-    const dt = new Date(y, m - 1, d);
-    if (recurrence === 'daily')    dt.setDate(dt.getDate() + i);
-    if (recurrence === 'weekly')   dt.setDate(dt.getDate() + i * 7);
-    if (recurrence === 'biweekly') dt.setDate(dt.getDate() + i * 14);
-    if (recurrence === 'monthly')  dt.setMonth(dt.getMonth() + i);
-    if (recurrence === 'yearly')   dt.setFullYear(dt.getFullYear() + i);
-    return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
-  });
-}
 
 const EMPTY_FORM = { title: '', description: '', date: '', category: 'general' };
 
@@ -329,29 +319,12 @@ function Calendar() {
 
             {modal.mode === 'add' && (
               <label>Recurrence
-                <div className="recurrence-row">
-                  <select value={recurrence} onChange={e => setRecurrence(e.target.value)}>
-                    <option value="none">Does not repeat</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="biweekly">Biweekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                  </select>
-                  {recurrence !== 'none' && (
-                    <>
-                      <input
-                        type="number"
-                        className="recurrence-count"
-                        min="2"
-                        max="52"
-                        value={recurrenceCount}
-                        onChange={e => setRecurrenceCount(Math.max(2, Math.min(52, Number(e.target.value))))}
-                      />
-                      <span className="recurrence-times-label">times</span>
-                    </>
-                  )}
-                </div>
+                <RecurrenceFields
+                  recurrence={recurrence}
+                  setRecurrence={setRecurrence}
+                  recurrenceCount={recurrenceCount}
+                  setRecurrenceCount={setRecurrenceCount}
+                />
               </label>
             )}
 

@@ -27,7 +27,7 @@ function BattleAdvisorCard({ onClick }) {
           '--rotate': s.rotate, '--peak-opacity': 0.75,
         }}>/</span>
       ))}
-      <AdvisorCard title="Battle Advisor" tagline="Track objectives, missions, and combat readiness." color="#e05c5c" icon="⚔️" onClick={onClick}>
+      <AdvisorCard title="Battle Advisor" tagline="- Plan attacks on your tasks, chores, and projects -" color="#e05c5c" icon="⚔️" onClick={onClick}>
         {BATTLE_SLASHES.filter(s => !s.behind).map((s, i) => (
           <span key={i} className="battle-slash" style={{
             left: s.left, bottom: s.bottom,

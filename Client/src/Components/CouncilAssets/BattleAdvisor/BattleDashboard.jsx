@@ -16,7 +16,9 @@ import generalRoman from './generalRoman.png';
 import BattleHexGrid from './BattleHexGrid';
 import BattleDialog from './BattleDialog';
 import SpeechBubble from '../../SpeechBubble';
+import RecurrenceFields from '../../RecurrenceFields';
 import { getDayType, getFocus, resolveFocus, getDialogue, getAttackDialogue } from './battleAdvisorUtils';
+import { generateDates } from '../../../utils/recurrence';
 
 const DIFFICULTIES = ['Minion', 'Captain', 'Champion', 'Commander', 'General', 'Overlord', 'Prophet', 'Emperor', 'God'];
 
@@ -174,8 +176,10 @@ function BattleDashboard() {
   const [slayingIds, setSlayingIds]             = useState(new Set());
   const [enemyHpSnapshot, setEnemyHpSnapshot]   = useState({});
   const [highlightedEnemyId, setHighlightedEnemyId] = useState(null);
-  const [sortBy, setSortBy]                     = useState('date');
+  const [sortBy, setSortBy]                     = useState('difficulty');
   const [sortDir, setSortDir]                   = useState('asc');
+  const [recurrence, setRecurrence]             = useState('none');
+  const [recurrenceCount, setRecurrenceCount]   = useState(4);
   const [suggestion, setSuggestion]             = useState(null); // { text, targetIds: Set }
   const [attackDialogue, setAttackDialogue]     = useState(null);
   const suggestionTimerRef                      = useRef(null);
@@ -248,8 +252,12 @@ function BattleDashboard() {
     e.preventDefault();
     if (!form.title.trim()) { setError('A name is required.'); return; }
     if (!form.date)         { setError('A date is required.'); return; }
-    addCalendarEvent({ ...form, title: form.title.trim(), category: 'battle' });
+    const eventData = { ...form, title: form.title.trim(), category: 'battle' };
+    const dates = recurrence !== 'none' ? generateDates(form.date, recurrence, recurrenceCount) : [form.date];
+    dates.forEach(date => addCalendarEvent({ ...eventData, date }));
     setForm(EMPTY_FORM);
+    setRecurrence('none');
+    setRecurrenceCount(4);
     setError('');
   }
 
@@ -314,6 +322,12 @@ function BattleDashboard() {
           />
           <button className="dashboard-add-btn" type="submit">Add</button>
         </div>
+        <RecurrenceFields
+          recurrence={recurrence}
+          setRecurrence={setRecurrence}
+          recurrenceCount={recurrenceCount}
+          setRecurrenceCount={setRecurrenceCount}
+        />
         {error && <p className="dashboard-error">{error}</p>}
       </form>
 

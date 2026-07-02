@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAppContext } from '../../../Context';
+import RecurrenceFields from '../../RecurrenceFields';
+import { generateDates } from '../../../utils/recurrence';
 
 const STATUS_COLORS = {
   great:       '#4caf82',
@@ -21,10 +23,12 @@ const EMPTY_PLANS = { date: '', description: '' };
 
 function RelationCard({ relation, onDelete, onEdit }) {
   const { addCalendarEvent } = useAppContext();
-  const [plansOpen, setPlansOpen] = useState(false);
-  const [editing, setEditing]     = useState(false);
-  const [plans, setPlans]         = useState(EMPTY_PLANS);
-  const [error, setError]         = useState('');
+  const [plansOpen, setPlansOpen]             = useState(false);
+  const [editing, setEditing]                 = useState(false);
+  const [plans, setPlans]                     = useState(EMPTY_PLANS);
+  const [error, setError]                     = useState('');
+  const [recurrence, setRecurrence]           = useState('none');
+  const [recurrenceCount, setRecurrenceCount] = useState(4);
   const [editForm, setEditForm]   = useState({
     name:               relation.name,
     birthday:           relation.birthday || '',
@@ -37,13 +41,12 @@ function RelationCard({ relation, onDelete, onEdit }) {
   function handleMakePlans(e) {
     e.preventDefault();
     if (!plans.date) { setError('A date is required.'); return; }
-    addCalendarEvent({
-      title:       `Plans with ${relation.name}`,
-      date:        plans.date,
-      description: plans.description,
-      category:    'diplomacy',
-    });
+    const eventData = { title: `Plans with ${relation.name}`, description: plans.description, category: 'diplomacy' };
+    const dates = recurrence !== 'none' ? generateDates(plans.date, recurrence, recurrenceCount) : [plans.date];
+    dates.forEach(date => addCalendarEvent({ ...eventData, date }));
     setPlans(EMPTY_PLANS);
+    setRecurrence('none');
+    setRecurrenceCount(4);
     setError('');
     setPlansOpen(false);
   }
@@ -107,6 +110,12 @@ function RelationCard({ relation, onDelete, onEdit }) {
         <form className="relation-plans-form" onSubmit={handleMakePlans}>
           <input className="relation-plans-input" type="date" value={plans.date} onChange={e => setPlans(p => ({ ...p, date: e.target.value }))} />
           <input className="relation-plans-input" type="text" placeholder="Activity or description (optional)" value={plans.description} onChange={e => setPlans(p => ({ ...p, description: e.target.value }))} />
+          <RecurrenceFields
+            recurrence={recurrence}
+            setRecurrence={setRecurrence}
+            recurrenceCount={recurrenceCount}
+            setRecurrenceCount={setRecurrenceCount}
+          />
           {error && <p className="relation-plans-error">{error}</p>}
           <button className="relation-plans-submit" type="submit">Add to Calendar</button>
         </form>

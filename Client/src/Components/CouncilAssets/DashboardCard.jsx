@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext, CATEGORIES } from '../../Context';
+import RecurrenceFields from '../RecurrenceFields';
+import { generateDates } from '../../utils/recurrence';
 
 const EMPTY_FORM = { title: '', description: '', date: '' };
 
@@ -60,6 +62,8 @@ function DashboardCard({ category, image, namePrefix }) {
   const { calendarEvents, addCalendarEvent, editCalendarEvent, deleteCalendarEvent } = useAppContext();
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState('');
+  const [recurrence, setRecurrence]           = useState('none');
+  const [recurrenceCount, setRecurrenceCount] = useState(4);
 
   const config = CATEGORIES.find(c => c.id === category);
   const items = calendarEvents
@@ -70,8 +74,12 @@ function DashboardCard({ category, image, namePrefix }) {
     e.preventDefault();
     if (!form.title.trim()) { setError('A title is required.'); return; }
     if (!form.date)         { setError('A date is required.'); return; }
-    addCalendarEvent({ ...form, title: form.title.trim(), category });
+    const eventData = { ...form, title: form.title.trim(), category };
+    const dates = recurrence !== 'none' ? generateDates(form.date, recurrence, recurrenceCount) : [form.date];
+    dates.forEach(date => addCalendarEvent({ ...eventData, date }));
     setForm(EMPTY_FORM);
+    setRecurrence('none');
+    setRecurrenceCount(4);
     setError('');
   }
 
@@ -92,6 +100,12 @@ function DashboardCard({ category, image, namePrefix }) {
           <input className="dashboard-input" type="text" placeholder="Description (optional)" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
           <button className="dashboard-add-btn" type="submit">Add</button>
         </div>
+        <RecurrenceFields
+          recurrence={recurrence}
+          setRecurrence={setRecurrence}
+          recurrenceCount={recurrenceCount}
+          setRecurrenceCount={setRecurrenceCount}
+        />
         {error && <p className="dashboard-error">{error}</p>}
       </form>
 
