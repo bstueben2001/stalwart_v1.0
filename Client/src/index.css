@@ -1753,6 +1753,75 @@ nav a.active {
   padding: 0.2rem 0.5rem;
 }
 
+/* ── Speech Bubble ── */
+.speech-bubble {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-bright);
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  max-width: 260px;
+  padding: 0.85rem 1rem 0.85rem 0.9rem;
+  position: relative;
+}
+
+.speech-bubble-text {
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  margin: 0;
+  padding-right: 0.75rem;
+}
+
+.speech-bubble-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.65rem;
+  line-height: 1;
+  padding: 0.1rem;
+  position: absolute;
+  right: 0.4rem;
+  top: 0.4rem;
+  transition: color 0.15s;
+}
+.speech-bubble-close:hover { color: var(--text-muted); }
+
+/* Advisor variant — fixed near the general, tail pointing right */
+.speech-bubble--advisor {
+  position: fixed;
+  bottom: 46vh;
+  right: 22rem;
+  z-index: 10;
+}
+.speech-bubble--advisor::after,
+.speech-bubble--advisor::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 8px solid transparent;
+}
+.speech-bubble--advisor::after {
+  right: -16px;
+  border-left-color: var(--border-bright);
+}
+.speech-bubble--advisor::before {
+  right: -13px;
+  border-left-color: var(--bg-raised);
+  z-index: 1;
+}
+
+/* ── Battle: Suggested enemy pulse ── */
+@keyframes battle-suggest-pulse {
+  from { box-shadow: 0 0 5px var(--diff-color), 0 0 2px var(--diff-color); }
+  to   { box-shadow: 0 0 14px var(--diff-color), 0 0 6px var(--diff-color); }
+}
+
+.battle-enemy-item--suggested {
+  animation: battle-suggest-pulse 1.1s ease-in-out infinite alternate;
+}
+
 /* ── Battle: Day Allocation Dialog ── */
 .battle-dialog-overlay {
   position: fixed;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function readLS(key, fallback) {
   try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; }
@@ -15,6 +15,8 @@ import { useAppContext } from '../../../Context';
 import generalRoman from './generalRoman.png';
 import BattleHexGrid from './BattleHexGrid';
 import BattleDialog from './BattleDialog';
+import SpeechBubble from '../../SpeechBubble';
+import { getDayType, getFocus, resolveFocus, getDialogue } from './battleAdvisorUtils';
 
 const DIFFICULTIES = ['Minion', 'Captain', 'Champion', 'Commander', 'General', 'Overlord', 'Prophet', 'Emperor', 'God'];
 
@@ -61,7 +63,7 @@ function formatDate(dateKey) {
   });
 }
 
-function BattleEnemyItem({ item, onEdit, onDelete, slaying = false, currentHp, maxHp, onExpand, onCollapse }) {
+function BattleEnemyItem({ item, onEdit, onDelete, slaying = false, suggested = false, currentHp, maxHp, onExpand, onCollapse }) {
   const [expanded, setExpanded] = useState(false);
   const [editing,  setEditing]  = useState(false);
   const [form, setForm] = useState({
@@ -128,7 +130,7 @@ function BattleEnemyItem({ item, onEdit, onDelete, slaying = false, currentHp, m
 
   return (
     <div
-      className={`dashboard-item battle-enemy-item${expanded ? ' battle-enemy-item--expanded' : ''}`}
+      className={`dashboard-item battle-enemy-item${expanded ? ' battle-enemy-item--expanded' : ''}${suggested ? ' battle-enemy-item--suggested' : ''}`}
       style={{ '--diff-color': itemDiffColor }}
       onClick={toggleExpanded}
     >
@@ -173,6 +175,8 @@ function BattleDashboard() {
   const [enemyHpSnapshot, setEnemyHpSnapshot]   = useState({});
   const [highlightedEnemyId, setHighlightedEnemyId] = useState(null);
   const [sortBy, setSortBy]                     = useState('date');
+  const [suggestion, setSuggestion]             = useState(null); // { text, targetIds: Set }
+  const suggestionTimerRef                      = useRef(null);
 
   useEffect(() => { localStorage.setItem(`battle_hasDeployed_${uid}`,      JSON.stringify(hasDeployed));      }, [hasDeployed, uid]);
   useEffect(() => { localStorage.setItem(`battle_savedHours_${uid}`,       JSON.stringify(savedHours));       }, [savedHours, uid]);
@@ -187,14 +191,27 @@ function BattleDashboard() {
     setHasDeployed(true);
     setDeployId(prev => prev + 1);
     setShowDialog(false);
+
+    const dayType = getDayType(sprites);
+    const focus   = getFocus(dayType);
+    const plan    = resolveFocus(focus, enemies, sprites);
+    clearTimeout(suggestionTimerRef.current);
+    suggestionTimerRef.current = setTimeout(() => {
+      setSuggestion({
+        text:      getDialogue(dayType),
+        targetIds: new Set(plan.targets.map(e => e.id)),
+      });
+    }, 3000);
   }
 
   function handleReset() {
+    clearTimeout(suggestionTimerRef.current);
     setSpriteCount(0);
     setSleepSpriteCount(0);
     setHasDeployed(false);
     setDeployId(prev => prev + 1);
     setShowDialog(false);
+    setSuggestion(null);
   }
 
   function handleSlay(enemyId) {
@@ -224,6 +241,11 @@ function BattleDashboard() {
   return (
     <div className="dashboard-page" style={{ '--advisor-color': '#e05c5c' }}>
       <img src={generalRoman} alt="" className="battle-general-img" />
+      <SpeechBubble
+        text={suggestion?.text}
+        onDismiss={() => setSuggestion(null)}
+        className="speech-bubble--advisor"
+      />
 
       <div className="dashboard-header">
         <button className="dashboard-back" onClick={() => navigate('/council')}>← Council</button>
@@ -295,6 +317,7 @@ function BattleDashboard() {
                   onEdit={editCalendarEvent}
                   onDelete={deleteCalendarEvent}
                   slaying={slayingIds.has(item.id)}
+                  suggested={suggestion?.targetIds.has(item.id) ?? false}
                   maxHp={DIFFICULTY_MIN[item.difficulty ?? 'Minion']}
                   currentHp={enemyHpSnapshot[item.id] !== undefined ? enemyHpSnapshot[item.id] : DIFFICULTY_MIN[item.difficulty ?? 'Minion']}
                   onExpand={id => setHighlightedEnemyId(id)}
